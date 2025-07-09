@@ -1,6 +1,8 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
+import { resetQuiz } from "../../store/slices/quizSlice.js";
 import { decodeHtml } from "../../helpers/index.js";
 
 import { Container } from "react-bootstrap";
@@ -9,6 +11,7 @@ import styles from "./Result.module.css";
 
 export default function Result() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { questions, userAnswers } = useSelector(state => state.quiz);
 
     const score = questions.reduce((total, question, index) => {
@@ -19,9 +22,17 @@ export default function Result() {
         return total;
     }, 0);
 
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = `${savedTheme}-theme`;
+    }, []);
+
     const percentage = Math.round((score / questions.length) * 100);
 
-    const handleClick = () => navigate("/");
+    const handleClick = () => {
+        dispatch(resetQuiz());
+        navigate("/");
+    }
 
     return (
         <Container className={styles.resultContainer}>

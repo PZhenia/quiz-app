@@ -2,80 +2,86 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 
-import { setUserAnswers } from "../../store/slices/quizSlice.js";
+import { setUserAnswers, setCurrentQuestionIndex, resetQuiz } from "../../store/slices/quizSlice.js";
 import { decodeHtml } from "../../helpers/index.js";
 
 import { Container } from "react-bootstrap";
-
 import styles from "./Quiz.module.css";
 
 export default function Quiz() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { questions, loading, error } = useSelector(state => state.quiz);
+    const { questions, loading, error, userAnswers, currentQuestionIndex } = useSelector(state => state.quiz);
 
-    const [currentQuestion, setCurrentQuestion] = useState(0);
-    const [localUserAnswers, setLocalUserAnswers] = useState([]);
     const [shuffledAnswers, setShuffledAnswers] = useState([]);
+
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.className = `${savedTheme}-theme`;
+    }, []);
 
     useEffect(() => {
         if (questions.length > 0) {
             const newAnswers = [
-                ...questions[currentQuestion].incorrect_answers,
-                questions[currentQuestion].correct_answer
+                ...questions[currentQuestionIndex].incorrect_answers,
+                questions[currentQuestionIndex].correct_answer
             ].sort(() => Math.random() - 0.5);
             setShuffledAnswers(newAnswers);
         }
-    }, [currentQuestion, questions]);
+    }, [currentQuestionIndex, questions]);
 
-    const handleClick = () => navigate("/");
+    const handleClick = () => {
+        navigate("/");
+    };
 
     if (loading) return <Container className={styles.loadingText}>Loading questions...</Container>;
     if (error) return <Container className={styles.errorText}>Error: {error}</Container>;
     if (questions.length === 0) return (
-        <Container
-            className={styles.emptyText}>No questions found.
-            <button
-                onClick={handleClick}
-                className={styles.tryAgainButton}
-            >
+        <Container className={styles.emptyText}>
+            No questions found.
+            <button onClick={handleClick} className={styles.tryAgainButton}>
                 Try Again
             </button>
         </Container>
     );
 
-    const question = questions[currentQuestion];
+    if (!questions[currentQuestionIndex]) {
+        dispatch(setCurrentQuestionIndex(0));
+        return <Container className={styles.loadingText}>Loading questions...</Container>;
+    }
+
+    const question = questions[currentQuestionIndex];
 
     const handleClickNext = () => {
-        setCurrentQuestion(prev => prev + 1);
+        dispatch(setCurrentQuestionIndex(currentQuestionIndex + 1));
     };
 
     const handleClickPrev = () => {
-        setCurrentQuestion(prev => prev - 1);
-    }
+        dispatch(setCurrentQuestionIndex(currentQuestionIndex - 1));
+    };
 
     const handleClickSubmit = () => {
-        dispatch(setUserAnswers(localUserAnswers));
         navigate("/result");
     };
 
     const handleClickQuit = () => {
         if (window.confirm("🔴Do you really want to quit the quiz?\nYour current progress will not be saved.")) {
+            dispatch(resetQuiz());
             navigate("/");
         }
     };
 
     const handleAnswerSelect = (selectedAnswer) => {
-        const updatedAnswers = [...localUserAnswers];
-        updatedAnswers[currentQuestion] = selectedAnswer;
-        setLocalUserAnswers(updatedAnswers);
+        const updatedAnswers = [...userAnswers];
+        updatedAnswers[currentQuestionIndex] = selectedAnswer;
+        dispatch(setUserAnswers(updatedAnswers));
     };
 
     return (
         <Container className={styles.quizContainer}>
             <div className={styles.progressContainer}>
                 <p className={styles.progressText}>
-                    Question {currentQuestion + 1} of {questions.length}
+                    Question {currentQuestionIndex + 1} of {questions.length}
                 </p>
                 <button
                     onClick={handleClickQuit}
@@ -100,9 +106,9 @@ export default function Quiz() {
                     >
                         <input
                             type="radio"
-                            name={`question-${currentQuestion}`}
+                            name={`question-${currentQuestionIndex}`}
                             value={answer}
-                            checked={localUserAnswers[currentQuestion] === answer}
+                            checked={userAnswers[currentQuestionIndex] === answer}
                             onChange={() => handleAnswerSelect(answer)}
                         />
                         <span className={styles.answerOptionText}>
@@ -113,7 +119,7 @@ export default function Quiz() {
             </div>
 
             <div className={styles.navigationButtons}>
-                {currentQuestion === 0 ? (
+                {currentQuestionIndex === 0 ? (
                     <div></div>
                 ) : (
                     <button
@@ -124,7 +130,7 @@ export default function Quiz() {
                     </button>
                 )}
 
-                {currentQuestion === questions.length - 1 ? (
+                {currentQuestionIndex === questions.length - 1 ? (
                     <button
                         onClick={handleClickSubmit}
                         className={`${styles.navButton} ${styles.submitButton}`}
@@ -141,5 +147,5 @@ export default function Quiz() {
                 )}
             </div>
         </Container>
-    )
+    );
 }
