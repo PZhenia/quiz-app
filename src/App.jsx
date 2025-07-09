@@ -21,24 +21,29 @@ function App() {
         setCurrentTheme(newTheme);
     };
 
-    const router = createBrowserRouter([
+    const router = createBrowserRouter(
+        [
+            {
+                path: "/",
+                element: <Home currentTheme={currentTheme} toggleTheme={toggleTheme} />,
+            },
+            {
+                path: "quiz",
+                element: <Quiz />,
+            },
+            {
+                path: "result",
+                element: <Result />,
+            },
+            {
+                path: "*",
+                element: <Home currentTheme={currentTheme} toggleTheme={toggleTheme} />,
+            },
+        ],
         {
-            path: "/",
-            element: <Home currentTheme={currentTheme} toggleTheme={toggleTheme} />,
-        },
-        {
-            path: "quiz",
-            element: <Quiz />,
-        },
-        {
-            path: "result",
-            element: <Result />,
-        },
-        {
-            path: "*",
-            element: <Home currentTheme={currentTheme} toggleTheme={toggleTheme} />,
-        },
-    ]);
+            basename: "/quiz-app",
+        }
+    );
 
     return <RouterProvider router={router} />;
 }
