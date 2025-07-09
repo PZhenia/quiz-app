@@ -1,0 +1,118 @@
+.homeContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background:
+            radial-gradient(circle at 10% 20%, rgba(102, 16, 242, 0.2) 0%, transparent 20%),
+            radial-gradient(circle at 90% 80%, rgba(232, 62, 140, 0.2) 0%, transparent 20%),
+            var(--bg-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.homeContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+            linear-gradient(135deg, transparent 48%, var(--primary-color) 49%, transparent 50%),
+            linear-gradient(45deg, transparent 48%, var(--accent-color) 49%, transparent 50%);
+    background-size: 30px 30px;
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    text-align: center;
+    text-shadow: 0 0 10px var(--primary-color);
+    position: relative;
+    animation: pulse 2s infinite alternate;
+}
+
+@keyframes pulse {
+    from {
+        text-shadow: 0 0 5px var(--primary-color);
+    }
+    to {
+        text-shadow: 0 0 15px var(--primary-color), 0 0 20px var(--accent-color);
+    }
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: var(--secondary-text-color);
+    margin-bottom: 3rem;
+    text-align: center;
+    max-width: 600px;
+    position: relative;
+}
+
+.themeToggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    box-shadow: var(--neon-glow);
+    transition: all 0.3s ease;
+}
+
+.themeToggle:hover {
+    background: var(--primary-hover-color);
+    box-shadow: 0 0 20px var(--primary-color);
+}
+
+@media (max-width: 1000px) {
+    .title {
+        margin-top: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .homeContainer {
+        padding: 1.5rem;
+    }
+
+    .title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        margin-top: 4rem;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .homeContainer {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+}
