@@ -46,7 +46,7 @@ export default function QuizForm() {
                 }}
                 validate={values => {
                     const errors = {};
-                    if (!values.numberOfQuestions || values.numberOfQuestions <= 0) {
+                    if (!values.numberOfQuestions || values.numberOfQuestions <= 0 || isNaN(values.numberOfQuestions)) {
                         errors.numberOfQuestions = "Please enter a positive number of questions";
                     }
                     return errors;
