@@ -40,9 +40,6 @@ function App() {
                 element: <Home currentTheme={currentTheme} toggleTheme={toggleTheme} />,
             },
         ],
-        {
-            basename: "/quiz-app",
-        }
     );
 
     return <RouterProvider router={router} />;
